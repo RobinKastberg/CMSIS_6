@@ -253,9 +253,9 @@ def model_exec(config):
     return cmdline
 
 
-@matrix_filter
-def filter_iar(config):
-    return config.compiler == CompilerAxis.IAR
+# @matrix_filter
+# def filter_iar(config):
+#     return config.compiler == CompilerAxis.IAR
 
 
 @matrix_filter

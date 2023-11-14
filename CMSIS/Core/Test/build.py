@@ -59,21 +59,23 @@ class OptimizationAxis(Enum):
 
 
 @matrix_action
-def lit(config):
-    """Run tests for the selected configurations using llvm's lit."""
-    yield run_lit(config.compiler[0], config.device[1], config.optimize[0])
+def lit(config, extra_args = None):
+    """Run tests for the selected configurations using llvm's lit."""    
+    yield run_lit(config.compiler[0], config.device[1], config.optimize[0], extra_args)
 
 
 def timestamp():
     return datetime.now().strftime('%Y%m%d%H%M%S')
 
 @matrix_command()
-def run_lit(toolchain, device, optimize):
-    return ["lit", "--xunit-xml-output", f"lit-{toolchain}-{optimize}-{device}.xunit", "-D", f"toolchain={toolchain}", "-D", f"device={device}", "-D", f"optimize={optimize}", "." ]
+def run_lit(toolchain, device, optimize, extra_args = None):
+    if not extra_args:
+        extra_args = ["."]
+    return ["lit", "--xunit-xml-output", f"lit-{toolchain}-{optimize}-{device}.xunit", "-D", f"toolchain={toolchain}", "-D", f"device={device}", "-D", f"optimize={optimize}"]+extra_args
 
-@matrix_filter
-def filter_iar(config):
-    return config.compiler == CompilerAxis.IAR
+# @matrix_filter
+# def filter_iar(config):
+#     return config.compiler == CompilerAxis.IAR
 
 @matrix_filter
 def filter_gcc_cm85(config):
