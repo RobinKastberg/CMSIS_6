@@ -17,6 +17,9 @@ solution:
     - for-compiler: IAR
       Link:
         - --semihosting
+    - for-compiler: IAR
+      C-CPP:
+        - --diag_suppress=Pa082
 
   packs:
     - pack: ARM::CMSIS

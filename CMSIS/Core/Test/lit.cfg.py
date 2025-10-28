@@ -888,6 +888,7 @@ class Toolchain_IAR(Toolchain):
         ccflags = [
             self.OPTIMIZE[self.optimize], 
             f'--cpu={self.cpu()}', f'--fpu={self.fpu()}', 
+            '--no_cross_call',
             '-I', os.path.abspath('../Include'), '-c', '-D', f'CORE_HEADER="{DEVICES[device]["header"]}"']
         if device.endswith('S') and not device.endswith('NS'):
             ccflags += ["--cmse"]

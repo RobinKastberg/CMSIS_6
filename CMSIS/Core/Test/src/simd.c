@@ -473,7 +473,6 @@ void sxtb16_ror() {
     // CHECK-LABEL: <sxtb16_ror>:
     // CHECK-NON-IAR: sxtb16 {{r[0-9]+}}, {{r[0-9]+}}, ror #8
     // CHECK-IAR: rors{{(\.w)?}} [[REG:r[0-9]+]], {{r[0-9]+}}, {{#8|#0x8}}
-    // CHECK-IAR: sxtb16 {{r[0-9]+}}, {{r[0-9]+}}
     volatile uint32_t result = __SXTB16_RORn(s32_1, 8);
 
     // CHECK-NON-IAR: sxtb16 {{r[0-9]+}}, {{r[0-9]+}}, ror #16
@@ -486,8 +485,23 @@ void sxtb16_ror() {
     // CHECK-IAR: sxtb16 {{r[0-9]+}}, {{r[0-9]+}}
     result = __SXTB16_RORn(s32_1, 24);
 
-    // CHECK-THUMB: ror{{s?}}.w [[REG:r[0-9]+]], {{r[0-9]+}}, {{#5|#0x5}}
-    // CHECK-ARM: ror{{s?}} [[REG:r[0-9]+]], {{r[0-9]+}}, {{#5|#0x5}}
+    // CHECK-NON-IAR: sxtb16 {{r[0-9]+}}, {{r[0-9]+}}, ror #8
+    // CHECK-IAR: ror{{s?}}{{(\.w)?}} [[REG:r[0-9]+]], {{r[0-9]+(, #8|, #0x8)?}}
+    // CHECK-IAR: sxtb16 {{r[0-9]+}}, {{r[0-9]+}}
+    volatile uint32_t result = __SXTB16_RORn(s32_1, 8);
+
+    // CHECK-NON-IAR: sxtb16 {{r[0-9]+}}, {{r[0-9]+}}, ror #16
+    // CHECK-IAR: ror{{s?}}{{(\.w)?}} [[REG:r[0-9]+]], {{r[0-9]+(, #16|, #0x16)?}}
+    // CHECK-IAR: sxtb16 {{r[0-9]+}}, {{r[0-9]+}}
+    result = __SXTB16_RORn(s32_1, 16);
+
+    // CHECK-NON-IAR: sxtb16 {{r[0-9]+}}, {{r[0-9]+}}, ror #24
+    // CHECK-IAR: ror{{s?}}{{(\.w)?}} [[REG:r[0-9]+]], {{r[0-9]+(, #24|, #0x24)?}}
+    // CHECK-IAR: sxtb16 {{r[0-9]+}}, {{r[0-9]+}}
+    result = __SXTB16_RORn(s32_1, 24);
+
+    // CHECK-NON-IAR: ror{{s?}}{{(\.w)?}} [[REG:r[0-9]+]], {{r[0-9]+}}, {{#5|#0x5}}
+    // CHECK-IAR: ror{{s?}}{{(\.w)?}} [[REG:r[0-9]+]], {{r[0-9]+(, #5|, #0x5)?}}
     // CHECK: sxtb16 {{r[0-9]+}}, [[REG]]
     // CHECK-NOT: , ror
     result = __SXTB16_RORn(s32_1, 5);
@@ -519,14 +533,29 @@ void sxtab16_ror() {
     // CHECK-IAR: sxtab16 {{r[0-9]+}}, {{r[0-9]+}}
     result = __SXTAB16_RORn(s32_1, s32_2, 24);
 
-    // CHECK-THUMB: ror{{s?}}.w [[REG:r[0-9]+]], {{r[0-9]+}}, {{#5|#0x5}}
-    // CHECK-ARM: ror{{s?}} [[REG:r[0-9]+]], {{r[0-9]+}}, {{#5|#0x5}}
+    // CHECK-NON-IAR: sxtab16 {{r[0-9]+}}, {{r[0-9]+}}, {{r[0-9]+}}, ror #8
+    // CHECK-IAR: ror{{s?}}{{(\.w)?}} [[REG:r[0-9]+]], {{(r[0-9]+|lr)(, r[0-9]+|, #8|, #0x8)?}}
+    // CHECK-IAR: sxtab16 {{r[0-9]+}}, {{r[0-9]+}}
+    volatile uint32_t result = __SXTAB16_RORn(s32_1, s32_2, 8);
+
+    // CHECK-NON-IAR: sxtab16 {{r[0-9]+}}, {{r[0-9]+}}, {{r[0-9]+}}, ror #16
+    // CHECK-IAR: ror{{s?}}{{(\.w)?}} [[REG:r[0-9]+]], {{(r[0-9]+|lr)(, r[0-9]+|, #16|, #0x16)?}}
+    // CHECK-IAR: sxtab16 {{r[0-9]+}}, {{r[0-9]+}}
+    result = __SXTAB16_RORn(s32_1, s32_2, 16);
+
+    // CHECK-NON-IAR: sxtab16 {{r[0-9]+}}, {{r[0-9]+}}, {{r[0-9]+}}, ror #24
+    // CHECK-IAR: ror{{s?}}{{(\.w)?}} [[REG:r[0-9]+]], {{(r[0-9]+|lr)(, r[0-9]+|, #24|, #0x24)?}}
+    // CHECK-IAR: sxtab16 {{r[0-9]+}}, {{r[0-9]+}}
+    result = __SXTAB16_RORn(s32_1, s32_2, 24);
+
+    // CHECK-NON-IAR: ror{{s?}}{{(\.w)?}} [[REG:r[0-9]+]], {{r[0-9]+}}, {{#5|#0x5}}
+    // CHECK-IAR: ror{{s?}}{{(\.w)?}} [[REG:r[0-9]+]], {{(r[0-9]+|lr)(, r[0-9]+|, #5|, #0x5)?}}
     // CHECK: sxtab16 {{r[0-9]+}}, {{r[0-9]+}}, [[REG]]
     // CHECK-NOT: , ror
     result = __SXTAB16_RORn(s32_1, s32_2, 5);
 
     // CHECK-THUMB: ror{{.w|ne|s}} {{r[0-9]+}}, {{r[0-9]+}}
-    // CHECK-ARM: ror{{s?|ne}} {{r[0-9]+}}, {{r[0-9]+}}
+    // CHECK-ARM: ror{{s?|ne}} {{r[0-9]+|lr}}, {{r[0-9]+}}
     // CHECK: sxtab16 {{r[0-9]+}}, {{r[0-9]+}}, {{r[0-9]+}}
     // CHECK-NOT: , ror
     result = __SXTAB16_RORn(s32_1, s32_2, u8);

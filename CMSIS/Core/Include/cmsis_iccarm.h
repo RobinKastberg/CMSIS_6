@@ -348,21 +348,21 @@ __STATIC_FORCEINLINE uint32_t __USAT(int32_t val, uint32_t sat)
 __IAR_FT uint8_t __LDRBT(volatile uint8_t *addr)
 {
   uint32_t res;
-  __ASM volatile ("LDRBT %0, [%1]" : "=r" (res) : "r" (addr) : "memory");
+  __ASM volatile ("LDRBT %0, [%1]" : "=&r" (res) : "r" (addr) : "memory");
   return ((uint8_t)res);
 }
 
 __IAR_FT uint16_t __LDRHT(volatile uint16_t *addr)
 {
   uint32_t res;
-  __ASM volatile ("LDRHT %0, [%1]" : "=r" (res) : "r" (addr) : "memory");
+  __ASM volatile ("LDRHT %0, [%1]" : "=&r" (res) : "r" (addr) : "memory");
   return ((uint16_t)res);
 }
 
 __IAR_FT uint32_t __LDRT(volatile uint32_t *addr)
 {
   uint32_t res;
-  __ASM volatile ("LDRT %0, [%1]" : "=r" (res) : "r" (addr) : "memory");
+  __ASM volatile ("LDRT %0, [%1]" : "=&r" (res) : "r" (addr) : "memory");
   return res;
 }
 
@@ -448,8 +448,50 @@ __IAR_FT void __STRT(uint32_t value, volatile uint32_t *addr)
 
   /* Note, these are suboptimal but I lack compiler features to express this */
 
-  #define __SXTB16_RORn(ARG1, ARG2) __SXTB16(__ROR(ARG1, ARG2))
-  #define __SXTAB16_RORn(ARG1, ARG2, ARG3) __SXTAB16(ARG1, __ROR(ARG2, ARG3))
+
+  __STATIC_FORCEINLINE uint32_t __SXTB16_RORn(uint32_t op1, uint32_t rotate)
+  {
+      uint32_t result;
+  #if defined(__has_builtin)
+    #if __has_builtin(__builtin_constant_p)
+      if (__builtin_constant_p(rotate) && ((rotate == 8U) || (rotate == 16U) || (rotate == 24U)))
+      {
+          __ASM volatile("sxtb16 %0, %1, ROR %2" : "=r"(result) : "r"(op1), "i"(rotate));
+      }
+      else
+      {
+          result = __SXTB16(__ROR(op1, rotate));
+      }
+    #else
+      result = __SXTB16(__ROR(op1, rotate));
+    #endif
+  #else
+      result = __SXTB16(__ROR(op1, rotate));
+  #endif
+      return result;
+  }
+  
+  __STATIC_FORCEINLINE uint32_t __SXTAB16_RORn(uint32_t op1, uint32_t op2, uint32_t rotate)
+  {
+      uint32_t result;
+  #if defined(__has_builtin)
+    #if __has_builtin(__builtin_constant_p)
+      if (__builtin_constant_p(rotate) && ((rotate == 8U) || (rotate == 16U) || (rotate == 24U)))
+      {
+          __ASM volatile("sxtab16 %0, %1, %2, ROR %3" : "=r"(result) : "r"(op1), "r"(op2), "i"(rotate));
+      }
+      else
+      {
+          result = __SXTAB16(op1, __ROR(op2, rotate));
+      }
+    #else
+      result = __SXTAB16(op1, __ROR(op2, rotate));
+    #endif
+  #else
+      result = __SXTAB16(op1, __ROR(op2, rotate));
+  #endif
+      return result;
+  }
 
 #endif /* (defined (__ARM_FEATURE_DSP) && (__ARM_FEATURE_DSP == 1)) */
 
